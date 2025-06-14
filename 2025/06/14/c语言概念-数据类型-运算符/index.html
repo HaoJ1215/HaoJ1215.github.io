@@ -13,7 +13,7 @@
 
 
 
-<title>Hello World | HaoJ&#39;s Blog</title>
+<title>c语言概念+数据类型+运算符 | HaoJ&#39;s Blog</title>
 
 
 
@@ -203,7 +203,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Hello World</h1>
+            <h1 class="post-title">c语言概念+数据类型+运算符</h1>
             
                 <div class="post-meta">
                     
@@ -212,7 +212,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">June 14, 2025&nbsp;&nbsp;0:24:53</a>
+                        Date: <a href="#">June 14, 2025&nbsp;&nbsp;11:07:50</a>
                         </span>
                     
                     
@@ -221,19 +221,231 @@
         </header>
 
         <div class="post-content">
-            <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+            <h1 id="c语言简单概念"><a href="#c语言简单概念" class="headerlink" title="c语言简单概念"></a>c语言简单概念</h1><ol>
+<li><p>C语言特点: 结构化\高效\底层控制能力强</p>
+</li>
+<li><p>c语言开发环境:</p>
+<ol>
+<li>编辑器: VS Code\Dev-C++</li>
+<li>编译器: GCC(gcc hello.c -o hello)</li>
+</ol>
+</li>
+<li><p>程序结构:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><h2 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+<th>内存</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>int</td>
+<td>整型</td>
+<td>4字节</td>
+<td><code>int a = 10;</code></td>
+</tr>
+<tr>
+<td>float</td>
+<td>单精度浮点型</td>
+<td>4字节</td>
+<td><code>float b = 3.14f;</code></td>
+</tr>
+<tr>
+<td>char</td>
+<td>字符型</td>
+<td>1字节</td>
+<td><code>char c = &#39;A&#39;;</code></td>
+</tr>
+<tr>
+<td>double</td>
+<td>双精度浮点型</td>
+<td>8字节</td>
+<td><code>double d = 3.14159;</code></td>
+</tr>
+</tbody></table>
+<h1 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h1><h2 id="算术运算符"><a href="#算术运算符" class="headerlink" title="算术运算符"></a>算术运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>名称</th>
+<th>示例</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>加法</td>
+<td><code>a + b</code></td>
+<td>两数相加</td>
+</tr>
+<tr>
+<td>-</td>
+<td>减法</td>
+<td><code>a - b</code></td>
+<td>两数相减</td>
+</tr>
+<tr>
+<td>*</td>
+<td>乘法</td>
+<td><code>a * b</code></td>
+<td>两数相乘</td>
+</tr>
+<tr>
+<td>&#x2F;</td>
+<td>除法</td>
+<td><code>a / b</code></td>
+<td>两数相除（整数&#x2F;浮点数结果不同）</td>
+</tr>
+<tr>
+<td>%</td>
+<td>取模（取余）</td>
+<td><code>a % b</code></td>
+<td>返回两数相除的余数（仅限整数）</td>
+</tr>
+<tr>
+<td>++</td>
+<td>自增</td>
+<td><code>a++ / ++a</code></td>
+<td>变量值+1（前&#x2F;后自增）</td>
+</tr>
+<tr>
+<td>–</td>
+<td>自减</td>
+<td><code>a-- / --a</code></td>
+<td>变量值-1（前&#x2F;后自减）</td>
+</tr>
+</tbody></table>
+<h2 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>名称</th>
+<th>示例</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x3D;&#x3D;</td>
+<td>等于</td>
+<td><code>a == b</code></td>
+<td>判断 a 和 b 是否相等</td>
+</tr>
+<tr>
+<td>!&#x3D;</td>
+<td>不等于</td>
+<td><code>a != b</code></td>
+<td>判断 a 和 b 是否不相等</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于</td>
+<td><code>a &gt; b</code></td>
+<td>判断 a 是否大于 b</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>小于</td>
+<td><code>a &lt; b</code></td>
+<td>判断 a 是否小于 b</td>
+</tr>
+<tr>
+<td>&gt;&#x3D;</td>
+<td>大于或等于</td>
+<td><code>a &gt;= b</code></td>
+<td>判断 a 是否大于或等于 b</td>
+</tr>
+<tr>
+<td>&lt;&#x3D;</td>
+<td>小于或等于</td>
+<td><code>a &lt;= b</code></td>
+<td>判断 a 是否小于或等于 b</td>
+</tr>
+</tbody></table>
+<h2 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>名称</th>
+<th>示例</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;&amp;</td>
+<td>逻辑与（AND）</td>
+<td><code>a &amp;&amp; b</code></td>
+<td>当 a 和 b 都为真时返回 1（否则返回 0）</td>
+</tr>
+<tr>
+<td>||</td>
+<td>逻辑或（OR）</td>
+<td><code>a || b</code></td>
+<td>当 a 或 b 至少一个为真时返回 1</td>
+</tr>
+<tr>
+<td>!</td>
+<td>逻辑非（NOT）</td>
+<td><code>!a</code></td>
+<td>如果 a 为假（0），则返回 1（否则返回 0）</td>
+</tr>
+</tbody></table>
+<h2 id="位运算符"><a href="#位运算符" class="headerlink" title="位运算符"></a>位运算符</h2><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>名称</th>
+<th>示例</th>
+<th>功能说明</th>
+<th>运算规则</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;</td>
+<td>按位与（AND）</td>
+<td><code>a &amp; b</code></td>
+<td>逐位进行与运算</td>
+<td>两位均为1时结果为1，否则0</td>
+</tr>
+<tr>
+<td>|</td>
+<td>按位或（OR）</td>
+<td><code>a | b</code></td>
+<td>逐位进行或运算</td>
+<td>两位至少一个为1时结果为1，否则0</td>
+</tr>
+<tr>
+<td>^</td>
+<td>按位异或（XOR）</td>
+<td><code>a ^ b</code></td>
+<td>逐位进行异或运算</td>
+<td>两位不同时结果为1，否则0</td>
+</tr>
+<tr>
+<td>~</td>
+<td>按位取反（NOT）</td>
+<td><code>~a</code></td>
+<td>对a的每一位取反</td>
+<td>0变1，1变0（单目运算）</td>
+</tr>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移</td>
+<td><code>a &lt;&lt; n</code></td>
+<td>将a的所有位左移n位</td>
+<td>低位补0，高位丢弃</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>右移</td>
+<td><code>a &gt;&gt; n</code></td>
+<td>将a的所有位右移n位</td>
+<td>高位补符号位（算术右移）或无符号补0（逻辑右移）</td>
+</tr>
+</tbody></table>
 
         </div>
 
@@ -248,7 +460,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="http://example.com/2025/06/14/hello-world/">http://example.com/2025/06/14/hello-world/</a></span>
+                        <span><a href="http://example.com/2025/06/14/c%E8%AF%AD%E8%A8%80%E6%A6%82%E5%BF%B5-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-%E8%BF%90%E7%AE%97%E7%AC%A6/">http://example.com/2025/06/14/c%E8%AF%AD%E8%A8%80%E6%A6%82%E5%BF%B5-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-%E8%BF%90%E7%AE%97%E7%AC%A6/</a></span>
                     </p>
                 
                 
@@ -266,6 +478,12 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/C%E8%AF%AD%E8%A8%80/"># C语言</a>
+                    
+                        <a href="/tags/learning-records/"># learning records</a>
+                    
+                        
                 </span>
             </div>
             <div>
@@ -276,8 +494,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/06/14/c%E8%AF%AD%E8%A8%80%E6%A6%82%E5%BF%B5-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-%E8%BF%90%E7%AE%97%E7%AC%A6/">c语言概念+数据类型+运算符</a>
+                <a class="prev" rel="prev" href="/2025/06/14/%E5%8F%98%E9%87%8F-%E6%95%B0%E7%BB%84-%E5%87%BD%E6%95%B0%E5%B0%81%E8%A3%85/">变量+数组+函数封装</a>
             
+            
+            <a class="next" rel="next" href="/2025/06/14/hello-world/">Hello World</a>
             
         </section>
 

@@ -17,7 +17,9 @@
     padding: 0;
     margin: 0;
     line-height: 5.5em;
-    background: $light-background-color;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(100,125,238,0.2);
   }
   .navbar-mobile .container .navbar-header {
     display: flex;
@@ -75,8 +77,9 @@
   }
   .navbar-mobile .container .menu {
     text-align: center;
-    background: $light-background-color;
-    border-top: 1px solid #000;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(100,125,238,0.2);
     padding-top: 1em;
     padding-bottom: 1em;
     user-select: none;
@@ -95,11 +98,12 @@
     overflow-x: auto;
   }
   .dark-theme .navbar-mobile .container .menu {
-    background: $dark-background-color;
-    border-top: 2px solid $dark-font-secondary-color;
+    background: rgba(10,10,10,0.9);
+    border-top: 1px solid rgba(0,243,255,0.2);
   }
   .dark-theme .navbar-mobile .container {
-    background: $dark-background-color !important;
+    background: rgba(10,10,10,0.9) !important;
+    border-bottom: 1px solid rgba(0,243,255,0.2);
   }
   .archive {
     width: 90%;
@@ -116,6 +120,9 @@
     text-align: center;
     line-height: 1.5rem;
     padding-top: 2em;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(100,125,238,0.2);
   }
   .post-warp {
     padding-top: 6em;
@@ -130,6 +137,14 @@
   }
   .categories .categories-card .card-item .categories {
     overflow: hidden;
+  }
+  .dark-theme .navbar-mobile .container {
+    background: rgba(10,10,10,0.9) !important;
+    border-bottom: 1px solid rgba(0,243,255,0.2);
+  }
+  .dark-theme .footer {
+    background: rgba(10,10,10,0.8);
+    border-top: 1px solid rgba(0,243,255,0.2);
   }
 }
 /* iPads (portrait and landscape) ----------- */
@@ -148,5 +163,15 @@
 @media screen and (max-width: 1279px) {
   .post-toc {
     display: none;
+  }
+}
+/* mobile phone and smart portable devices */
+@media screen and (max-width: 479px) {
+  .archive,
+  .post-list {
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
   }
 }

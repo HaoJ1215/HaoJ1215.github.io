@@ -8,6 +8,10 @@
   height: 4rem;
   line-height: 4rem;
   width: 100%;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(100,125,238,0.2);
 }
 .navbar .container {
   width: auto;
@@ -39,4 +43,16 @@
   width: 100%;
   text-align: center;
   line-height: 4rem;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(100,125,238,0.2);
+}
+.dark-theme .navbar {
+  background: rgba(10,10,10,0.8);
+  border-bottom: 1px solid rgba(0,243,255,0.2);
+}
+.dark-theme .footer {
+  background: rgba(10,10,10,0.8);
+  border-top: 1px solid rgba(0,243,255,0.2);
 }

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="JiangHao">
+
+
+    <meta name="subtitle" content="技术与创意的探索平台">
+
+
+    <meta name="description" content="个人技术博客，分享编程的学习与思考">
+
+
+    <meta name="keywords" content="编程,技术,博客">
+
+
+<title>c语言文件操作 | HaoJ&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">HaoJ&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">HaoJ&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">c语言文件操作</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">JiangHao</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">九月 28, 2025&nbsp;&nbsp;15:31:56</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>本章总结了C语言文件操作的核心概念、关键函数使用方法和实际应用示例。涉及文件的打开、读写、关闭等操作。</p>
+<h1 id="文件操作基础"><a href="#文件操作基础" class="headerlink" title="文件操作基础"></a>文件操作基础</h1><h2 id="文件概念与模式"><a href="#文件概念与模式" class="headerlink" title="文件概念与模式"></a>文件概念与模式</h2><p>文件操作允许程序读取或写入外部文件。在C语言中，文件被视为字节流，通过文件指针（如<code>FILE*</code>）进行操作。关键文件模式如下，包括文本模式和二进制模式：</p>
+<table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left">说明</th>
+<th>文件存在时</th>
+<th>文件不存在时</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">“r”</td>
+<td align="left">只读模式</td>
+<td>打开文件</td>
+<td>返回NULL</td>
+<td>文本</td>
+</tr>
+<tr>
+<td align="left">“w”</td>
+<td align="left">只写模式</td>
+<td>清空内容后写入</td>
+<td>创建新文件</td>
+<td>文本</td>
+</tr>
+<tr>
+<td align="left">“a”</td>
+<td align="left">追加模式</td>
+<td>在末尾追加内容</td>
+<td>创建新文件</td>
+<td>文本</td>
+</tr>
+<tr>
+<td align="left">“r+”</td>
+<td align="left">读写模式</td>
+<td>打开文件</td>
+<td>返回NULL</td>
+<td>文本</td>
+</tr>
+<tr>
+<td align="left">“w+”</td>
+<td align="left">读写模式</td>
+<td>清空内容后读写</td>
+<td>创建新文件</td>
+<td>文本</td>
+</tr>
+<tr>
+<td align="left">“rb”</td>
+<td align="left">二进制只读</td>
+<td>打开文件</td>
+<td>返回NULL</td>
+<td>二进制</td>
+</tr>
+<tr>
+<td align="left">“wb”</td>
+<td align="left">二进制只写</td>
+<td>清空内容后写入</td>
+<td>创建新文件</td>
+<td>二进制</td>
+</tr>
+<tr>
+<td align="left">“ab”</td>
+<td align="left">二进制追加</td>
+<td>在末尾追加内容</td>
+<td>创建新文件</td>
+<td>二进制</td>
+</tr>
+<tr>
+<td align="left">“r+b”</td>
+<td align="left">二进制读写</td>
+<td>打开文件</td>
+<td>返回NULL</td>
+<td>二进制</td>
+</tr>
+<tr>
+<td align="left">“w+b”</td>
+<td align="left">二进制读写</td>
+<td>清空内容后读写</td>
+<td>创建新文件</td>
+<td>二进制</td>
+</tr>
+</tbody></table>
+<p><strong>关键点：</strong></p>
+<ul>
+<li><p>使用<code>fopen</code>后必须检查返回值，避免空指针错误</p>
+</li>
+<li><p>模式选择错误可能导致数据丢失（如误用”w”覆盖文件）</p>
+</li>
+<li><p>二进制模式（如”rb”、”wb”）用于非文本文件（如图像、音频），避免字符转换</p>
+</li>
+<li><p>文本模式与二进制模式区别：文本模式处理换行符转换（如Windows下”\r\n”转换为”\n”），二进制模式直接操作原始字节</p>
+</li>
+<li><p>程序结束前应调用<code>fclose</code>释放资源，防止内存泄漏</p>
+</li>
+</ul>
+<h1 id="关键函数与用法"><a href="#关键函数与用法" class="headerlink" title="关键函数与用法"></a>关键函数与用法</h1><h2 id="核心函数总结"><a href="#核心函数总结" class="headerlink" title="核心函数总结"></a>核心函数总结</h2><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+<th>示例用法</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fopen</td>
+<td>打开文件</td>
+<td><code>FILE* fp = fopen(&quot;test.txt&quot;, &quot;r&quot;);</code></td>
+<td>总是检查返回值是否为NULL</td>
+</tr>
+<tr>
+<td>fclose</td>
+<td>关闭文件</td>
+<td><code>fclose(fp);</code></td>
+<td>避免重复关闭已关闭的文件</td>
+</tr>
+<tr>
+<td>fread</td>
+<td>读取数据</td>
+<td><code>fread(buffer, size, count, fp);</code></td>
+<td>适用于二进制文件，返回实际读取项数</td>
+</tr>
+<tr>
+<td>fwrite</td>
+<td>写入数据</td>
+<td><code>fwrite(data, size, count, fp);</code></td>
+<td>写入后检查返回值确认成功</td>
+</tr>
+<tr>
+<td>fseek</td>
+<td>移动文件指针</td>
+<td><code>fseek(fp, offset, SEEK_SET);</code></td>
+<td>常用于随机访问文件内容</td>
+</tr>
+<tr>
+<td>ftell</td>
+<td>获取当前位置</td>
+<td><code>long pos = ftell(fp);</code></td>
+<td>结合fseek用于计算文件大小</td>
+</tr>
+</tbody></table>
+<h2 id="函数使用示例"><a href="#函数使用示例" class="headerlink" title="函数使用示例"></a>函数使用示例</h2><h3 id="基本文件读写（文本模式）"><a href="#基本文件读写（文本模式）" class="headerlink" title="基本文件读写（文本模式）"></a>基本文件读写（文本模式）</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    FILE* fp = fopen(<span class="string">&quot;example.txt&quot;</span>, <span class="string">&quot;w&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (fp == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;文件打开失败&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 写入字符串</span></span><br><span class="line">    <span class="built_in">fputs</span>(<span class="string">&quot;Hello File Operation!\n&quot;</span>, fp);</span><br><span class="line">    fclose(fp);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 重新打开读取</span></span><br><span class="line">    fp = fopen(<span class="string">&quot;example.txt&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">100</span>];</span><br><span class="line">    fgets(buffer, <span class="keyword">sizeof</span>(buffer), fp);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;读取内容: %s&quot;</span>, buffer);</span><br><span class="line">    fclose(fp);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二进制文件操作"><a href="#二进制文件操作" class="headerlink" title="二进制文件操作"></a>二进制文件操作</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="type">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="type">float</span> score;</span><br><span class="line">&#125; Student;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    Student stu = &#123;<span class="number">1</span>, <span class="string">&quot;Alice&quot;</span>, <span class="number">95.5f</span>&#125;;</span><br><span class="line">    FILE* fp = fopen(<span class="string">&quot;data.bin&quot;</span>, <span class="string">&quot;wb&quot;</span>);  <span class="comment">// 二进制写入模式</span></span><br><span class="line">    <span class="keyword">if</span> (fp) &#123;</span><br><span class="line">        fwrite(&amp;stu, <span class="keyword">sizeof</span>(Student), <span class="number">1</span>, fp);</span><br><span class="line">        fclose(fp);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 读取二进制数据</span></span><br><span class="line">    Student read_stu;</span><br><span class="line">    fp = fopen(<span class="string">&quot;data.bin&quot;</span>, <span class="string">&quot;rb&quot;</span>);  <span class="comment">// 二进制读取模式</span></span><br><span class="line">    <span class="keyword">if</span> (fp) &#123;</span><br><span class="line">        fread(&amp;read_stu, <span class="keyword">sizeof</span>(Student), <span class="number">1</span>, fp);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ID: %d, Name: %s, Score: %.1f\n&quot;</span>, </span><br><span class="line">               read_stu.id, read_stu.name, read_stu.score);</span><br><span class="line">        fclose(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二进制与文本模式对比"><a href="#二进制与文本模式对比" class="headerlink" title="二进制与文本模式对比"></a>二进制与文本模式对比</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 文本模式写入：换行符可能被转换</span></span><br><span class="line">    FILE* txt_fp = fopen(<span class="string">&quot;text.txt&quot;</span>, <span class="string">&quot;w&quot;</span>);</span><br><span class="line">    <span class="built_in">fputs</span>(<span class="string">&quot;Line1\nLine2&quot;</span>, txt_fp);</span><br><span class="line">    fclose(txt_fp);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 二进制模式写入：原始字节不变</span></span><br><span class="line">    FILE* bin_fp = fopen(<span class="string">&quot;binary.bin&quot;</span>, <span class="string">&quot;wb&quot;</span>);</span><br><span class="line">    <span class="built_in">fputs</span>(<span class="string">&quot;Line1\nLine2&quot;</span>, bin_fp);</span><br><span class="line">    fclose(bin_fp);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="高级应用与练习"><a href="#高级应用与练习" class="headerlink" title="高级应用与练习"></a>高级应用与练习</h1><h2 id="文件定位与随机访问（二进制模式）"><a href="#文件定位与随机访问（二进制模式）" class="headerlink" title="文件定位与随机访问（二进制模式）"></a>文件定位与随机访问（二进制模式）</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    FILE* fp = fopen(<span class="string">&quot;data.bin&quot;</span>, <span class="string">&quot;w+b&quot;</span>);  <span class="comment">// 二进制读写模式</span></span><br><span class="line">    <span class="keyword">if</span> (fp) &#123;</span><br><span class="line">        <span class="comment">// 写入多个整数</span></span><br><span class="line">        <span class="type">int</span> data[] = &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        fwrite(data, <span class="keyword">sizeof</span>(<span class="type">int</span>), <span class="number">5</span>, fp);</span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 移动到第3个整数位置（每个整数占4字节）</span></span><br><span class="line">        fseek(fp, <span class="number">2</span> * <span class="keyword">sizeof</span>(<span class="type">int</span>), SEEK_SET);</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        fread(&amp;val, <span class="keyword">sizeof</span>(<span class="type">int</span>), <span class="number">1</span>, fp);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;第3个整数: %d\n&quot;</span>, val);  <span class="comment">// 输出: 30</span></span><br><span class="line">      </span><br><span class="line">        fclose(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件复制实用程序（支持二进制）"><a href="#文件复制实用程序（支持二进制）" class="headerlink" title="文件复制实用程序（支持二进制）"></a>文件复制实用程序（支持二进制）</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">file_copy</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* src, <span class="type">const</span> <span class="type">char</span>* dst, <span class="type">int</span> is_binary)</span> &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span>* mode_read = is_binary ? <span class="string">&quot;rb&quot;</span> : <span class="string">&quot;r&quot;</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span>* mode_write = is_binary ? <span class="string">&quot;wb&quot;</span> : <span class="string">&quot;w&quot;</span>;</span><br><span class="line">  </span><br><span class="line">    FILE* src_fp = fopen(src, mode_read);</span><br><span class="line">    FILE* dst_fp = fopen(dst, mode_write);</span><br><span class="line">    <span class="keyword">if</span> (!src_fp || !dst_fp) &#123;</span><br><span class="line">        <span class="keyword">if</span> (src_fp) fclose(src_fp);</span><br><span class="line">        <span class="keyword">if</span> (dst_fp) fclose(dst_fp);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">1024</span>];</span><br><span class="line">    <span class="type">size_t</span> bytes;</span><br><span class="line">    <span class="keyword">while</span> ((bytes = fread(buffer, <span class="number">1</span>, <span class="keyword">sizeof</span>(buffer), src_fp)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        fwrite(buffer, <span class="number">1</span>, bytes, dst_fp);</span><br><span class="line">    &#125;<span class="comment">//关键循环</span></span><br><span class="line">  </span><br><span class="line">    fclose(src_fp);</span><br><span class="line">    fclose(dst_fp);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 复制文本文件</span></span><br><span class="line">    <span class="keyword">if</span> (file_copy(<span class="string">&quot;source.txt&quot;</span>, <span class="string">&quot;dest_text.txt&quot;</span>, <span class="number">0</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;文本文件复制成功\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 复制二进制文件（如图像）</span></span><br><span class="line">    <span class="keyword">if</span> (file_copy(<span class="string">&quot;image.jpg&quot;</span>, <span class="string">&quot;copy.jpg&quot;</span>, <span class="number">1</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;二进制文件复制成功\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结与关键点"><a href="#总结与关键点" class="headerlink" title="总结与关键点"></a>总结与关键点</h1><h2 id="学习收获"><a href="#学习收获" class="headerlink" title="学习收获"></a>学习收获</h2><ul>
+<li><strong>资源管理</strong>：始终成对使用<code>fopen</code>&#x2F;<code>fclose</code>，避免资源泄漏</li>
+<li><strong>错误处理</strong>：检查文件操作的返回值，增强程序健壮性</li>
+<li><strong>性能优化</strong>：使用缓冲区（如<code>fread</code>&#x2F;<code>fwrite</code>）提升大文件处理效率，二进制模式通常更快（无字符转换）</li>
+</ul>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li>文本模式：日志记录、配置文件读写（使用”a”追加或”r”读取）</li>
+<li>二进制模式：图像&#x2F;音频处理、数据序列化（保存结构体）、网络数据传输</li>
+<li>混合模式：通过<code>fseek</code>和<code>ftell</code>实现随机访问，适用于数据库索引</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>JiangHao</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://haoj1215.github.io/2025/09/28/c%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/">https://haoj1215.github.io/2025/09/28/c%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2024 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/C%E8%AF%AD%E8%A8%80/"># C语言</a>
+                    
+                        <a href="/tags/summary/"># summary</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/10/02/c%E8%AF%AD%E8%A8%80%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0/">c语言内存分配函数</a>
+            
+            
+            <a class="next" rel="next" href="/2025/09/18/c%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E8%AE%BE%E8%AE%A1/">c语言结构体设计</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© JiangHao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="JiangHao">
+
+
+    <meta name="subtitle" content="技术与创意的探索平台">
+
+
+    <meta name="description" content="个人技术博客，分享编程的学习与思考">
+
+
+    <meta name="keywords" content="编程,技术,博客">
+
+
+<title>c语言内存分配函数 | HaoJ&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">HaoJ&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">HaoJ&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">c语言内存分配函数</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">JiangHao</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十月 2, 2025&nbsp;&nbsp;15:51:02</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>本章总结了C语言动态内存分配的核心函数（malloc、calloc、realloc）及其应用。</p>
+<h1 id="内存分配函数概述"><a href="#内存分配函数概述" class="headerlink" title="内存分配函数概述"></a>内存分配函数概述</h1><h2 id="函数对比表"><a href="#函数对比表" class="headerlink" title="函数对比表"></a>函数对比表</h2><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能说明</th>
+<th>初始化内容</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>malloc</td>
+<td>分配指定字节数的内存块</td>
+<td>未初始化</td>
+<td>通用内存分配，需要手动初始化</td>
+</tr>
+<tr>
+<td>calloc</td>
+<td>分配并清零指定数量的内存块</td>
+<td>初始化为0</td>
+<td>数组分配，需要零初始化</td>
+</tr>
+<tr>
+<td>realloc</td>
+<td>调整已分配内存块的大小</td>
+<td>保留原数据</td>
+<td>动态数组扩容&#x2F;缩容</td>
+</tr>
+</tbody></table>
+<p><strong>关键点：</strong></p>
+<ul>
+<li><p>所有函数返回<code>void*</code>，需要强制类型转换</p>
+</li>
+<li><p>分配失败时返回<code>NULL</code>，必须检查返回值</p>
+</li>
+<li><p>使用后必须调用<code>free()</code>释放内存，防止内存泄漏</p>
+</li>
+<li><p>动态内存分配在堆(heap)区进行，生命周期由程序员控制</p>
+</li>
+</ul>
+<h1 id="函数详解与示例"><a href="#函数详解与示例" class="headerlink" title="函数详解与示例"></a>函数详解与示例</h1><h2 id="malloc-内存分配"><a href="#malloc-内存分配" class="headerlink" title="malloc - 内存分配"></a>malloc - 内存分配</h2><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 分配10个整数的空间</span></span><br><span class="line">    <span class="type">int</span>* arr = (<span class="type">int</span>*)<span class="built_in">malloc</span>(<span class="number">10</span> * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;内存分配失败&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 手动初始化（malloc不初始化内存）</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        arr[i] = i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 使用内存</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, arr[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 释放内存</span></span><br><span class="line">    <span class="built_in">free</span>(arr);</span><br><span class="line">    arr = <span class="literal">NULL</span>;  <span class="comment">// 避免悬空指针</span></span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结构体分配"><a href="#结构体分配" class="headerlink" title="结构体分配"></a>结构体分配</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Employee</span>&#123;</span></span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="type">char</span> name[<span class="number">50</span>];</span><br><span class="line">    <span class="type">float</span> salary;</span><br><span class="line">&#125; Employee;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    Employee* emp = (Employee*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Employee));</span><br><span class="line">    <span class="keyword">if</span> (emp) &#123;</span><br><span class="line">        emp-&gt;id = <span class="number">1001</span>;</span><br><span class="line">        <span class="built_in">strcpy</span>(emp-&gt;name, <span class="string">&quot;张三&quot;</span>);</span><br><span class="line">        emp-&gt;salary = <span class="number">8000.0f</span>;</span><br><span class="line">      </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;员工ID: %d, 姓名: %s, 工资: %.2f\n&quot;</span>, </span><br><span class="line">               emp-&gt;id, emp-&gt;name, emp-&gt;salary);</span><br><span class="line">      </span><br><span class="line">        <span class="built_in">free</span>(emp);</span><br><span class="line">        emp = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="calloc-清零分配"><a href="#calloc-清零分配" class="headerlink" title="calloc - 清零分配"></a>calloc - 清零分配</h2><h3 id="数组分配"><a href="#数组分配" class="headerlink" title="数组分配"></a>数组分配</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 分配并初始化10个整数为0</span></span><br><span class="line">    <span class="type">int</span>* zeros = (<span class="type">int</span>*)<span class="built_in">calloc</span>(<span class="number">10</span>, <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (zeros == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;calloc失败&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 验证已初始化为0</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, zeros[i]);  <span class="comment">// 全部输出0</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">  </span><br><span class="line">    <span class="built_in">free</span>(zeros);</span><br><span class="line">    zeros = <span class="literal">NULL</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="字符串数组分配"><a href="#字符串数组分配" class="headerlink" title="字符串数组分配"></a>字符串数组分配</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 分配5个字符串指针，每个字符串最大长度20</span></span><br><span class="line">    <span class="type">char</span>** names = (<span class="type">char</span>**)<span class="built_in">calloc</span>(<span class="number">5</span>, <span class="keyword">sizeof</span>(<span class="type">char</span>*));</span><br><span class="line">    <span class="keyword">if</span> (names) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            names[i] = (<span class="type">char</span>*)<span class="built_in">calloc</span>(<span class="number">20</span>, <span class="keyword">sizeof</span>(<span class="type">char</span>));</span><br><span class="line">            <span class="built_in">sprintf</span>(names[i], <span class="string">&quot;用户%d&quot;</span>, i + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, names[i]);</span><br><span class="line">            <span class="built_in">free</span>(names[i]);  <span class="comment">// 释放每个字符串</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">free</span>(names);  <span class="comment">// 释放指针数组</span></span><br><span class="line">        names = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="realloc-内存重分配"><a href="#realloc-内存重分配" class="headerlink" title="realloc - 内存重分配"></a>realloc - 内存重分配</h2><h3 id="核心规则"><a href="#核心规则" class="headerlink" title="核心规则"></a>核心规则</h3><p><strong>realloc的扩容和缩容，完全取决于新旧内存大小的比较而决定：</strong></p>
+<p><code>void* realloc(void* ptr, size_t new_size);</code> </p>
+<ul>
+<li>new_size &gt; original_size  → 扩容（可能移动内存块）</li>
+<li>new_size &lt; original_size  → 缩容（可能移动内存块）</li>
+<li>new_size &#x3D;&#x3D; original_size → 无操作（返回原指针）</li>
+</ul>
+<h3 id="动态数组扩容"><a href="#动态数组扩容" class="headerlink" title="动态数组扩容"></a>动态数组扩容</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span>* arr = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">int</span> capacity = <span class="number">5</span>;  <span class="comment">// 初始容量</span></span><br><span class="line">    <span class="type">int</span> count = <span class="number">0</span>;     <span class="comment">// 当前元素数量</span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 初始分配</span></span><br><span class="line">    arr = (<span class="type">int</span>*)<span class="built_in">malloc</span>(capacity * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (!arr) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 模拟添加数据</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">15</span>; i++) &#123;</span><br><span class="line">        <span class="comment">// 检查是否需要扩容</span></span><br><span class="line">        <span class="keyword">if</span> (count &gt;= capacity) &#123;</span><br><span class="line">            capacity *= <span class="number">2</span>;  <span class="comment">// 双倍扩容策略</span></span><br><span class="line">            <span class="type">int</span>* temp = (<span class="type">int</span>*)<span class="built_in">realloc</span>(arr, capacity * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">            <span class="keyword">if</span> (!temp) &#123;</span><br><span class="line">                perror(<span class="string">&quot;realloc失败&quot;</span>);</span><br><span class="line">                <span class="built_in">free</span>(arr);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            arr = temp;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;扩容至%d个元素\n&quot;</span>, capacity);</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        arr[count++] = i * <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 输出结果</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, arr[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\n最终容量: %d\n&quot;</span>, capacity);</span><br><span class="line">  </span><br><span class="line">    <span class="built_in">free</span>(arr);</span><br><span class="line">    arr = <span class="literal">NULL</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="内存缩容"><a href="#内存缩容" class="headerlink" title="内存缩容"></a>内存缩容</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 初始分配大内存</span></span><br><span class="line">    <span class="type">int</span>* data = (<span class="type">int</span>*)<span class="built_in">malloc</span>(<span class="number">100</span> * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (!data) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">        data[i] = i;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;原始大小: 100个整数\n&quot;</span>);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 实际只需要前10个元素，缩容</span></span><br><span class="line">    <span class="type">int</span>* temp = (<span class="type">int</span>*)<span class="built_in">realloc</span>(data, <span class="number">10</span> * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (temp) &#123;</span><br><span class="line">        data = temp;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;缩容后大小: 10个整数\n&quot;</span>);</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, data[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="built_in">free</span>(data);</span><br><span class="line">    data = <span class="literal">NULL</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="常见问题与解决方案"><a href="#常见问题与解决方案" class="headerlink" title="常见问题与解决方案"></a>常见问题与解决方案</h1><h2 id="内存泄漏检测"><a href="#内存泄漏检测" class="headerlink" title="内存泄漏检测"></a>内存泄漏检测</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 简单内存跟踪（实际项目建议使用专业工具如Valgrind）</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> DEBUG</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> TRACK_ALLOC(ptr, size) printf(<span class="string">&quot;分配: %p, 大小: %zu\n&quot;</span>, ptr, size)</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> TRACK_FREE(ptr) printf(<span class="string">&quot;释放: %p\n&quot;</span>, ptr)</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> TRACK_ALLOC(ptr, size)</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> TRACK_FREE(ptr)</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span>* <span class="title function_">safe_malloc</span><span class="params">(<span class="type">size_t</span> size)</span> &#123;</span><br><span class="line">    <span class="type">void</span>* ptr = <span class="built_in">malloc</span>(size);</span><br><span class="line">    TRACK_ALLOC(ptr, size);</span><br><span class="line">    <span class="keyword">return</span> ptr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">safe_free</span><span class="params">(<span class="type">void</span>* ptr)</span> &#123;</span><br><span class="line">    TRACK_FREE(ptr);</span><br><span class="line">    <span class="built_in">free</span>(ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span>* data = (<span class="type">int</span>*)safe_malloc(<span class="number">10</span> * <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (data) &#123;</span><br><span class="line">        <span class="comment">// 使用内存</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            data[i] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        safe_free(data);</span><br><span class="line">        data = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="防御性编程实践"><a href="#防御性编程实践" class="headerlink" title="防御性编程实践"></a>防御性编程实践</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 安全的字符串复制函数</span></span><br><span class="line"><span class="type">char</span>* <span class="title function_">safe_strdup</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* str)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (str == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="type">size_t</span> len = <span class="built_in">strlen</span>(str) + <span class="number">1</span>;</span><br><span class="line">    <span class="type">char</span>* new_str = (<span class="type">char</span>*)<span class="built_in">malloc</span>(len);</span><br><span class="line">    <span class="keyword">if</span> (new_str) &#123;</span><br><span class="line">        <span class="built_in">memcpy</span>(new_str, str, len);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> new_str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 安全的重新分配函数</span></span><br><span class="line"><span class="type">void</span>* <span class="title function_">safe_realloc</span><span class="params">(<span class="type">void</span>* ptr, <span class="type">size_t</span> new_size)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (new_size == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">free</span>(ptr);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="type">void</span>* new_ptr = <span class="built_in">realloc</span>(ptr, new_size);</span><br><span class="line">    <span class="keyword">if</span> (new_ptr == <span class="literal">NULL</span> &amp;&amp; new_size &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">free</span>(ptr);  <span class="comment">// 避免内存泄漏</span></span><br><span class="line">        perror(<span class="string">&quot;realloc失败&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> new_ptr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span>* name = safe_strdup(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (name) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;复制字符串: %s\n&quot;</span>, name);</span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 尝试扩容</span></span><br><span class="line">        <span class="type">char</span>* temp = (<span class="type">char</span>*)safe_realloc(name, <span class="number">50</span>);</span><br><span class="line">        <span class="keyword">if</span> (temp) &#123;</span><br><span class="line">            name = temp;</span><br><span class="line">            <span class="built_in">strcat</span>(name, <span class="string">&quot; - 扩容成功&quot;</span>);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;扩容后: %s\n&quot;</span>, name);</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        <span class="built_in">free</span>(name);</span><br><span class="line">        name = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="关键要点"><a href="#关键要点" class="headerlink" title="关键要点"></a>关键要点</h2><ol>
+<li><strong>必须检查返回值</strong>：所有分配函数都可能失败，返回<code>NULL</code></li>
+<li><strong>及时释放内存</strong>：使用<code>free()</code>避免内存泄漏，指针置<code>NULL</code>避免悬空指针</li>
+<li><strong>匹配分配与释放</strong>：<code>malloc/calloc/realloc</code>对应<code>free</code>，不要混合使用</li>
+<li><strong>避免重复释放</strong>：同一内存块只能释放一次</li>
+<li><strong>注意内存对齐</strong>：结构体分配时考虑内存对齐问题</li>
+</ol>
+<h2 id="性能建议"><a href="#性能建议" class="headerlink" title="性能建议"></a>性能建议</h2><ul>
+<li><strong>malloc</strong>：最快，适用于不需要初始化的场景</li>
+<li><strong>calloc</strong>：自动清零，适用于数组和需要确定初始值的场景</li>
+<li><strong>realloc</strong>：高效调整大小，注意可能的内存搬移开销</li>
+<li><strong>批量分配</strong>：多次小分配不如一次大分配高效</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>JiangHao</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://haoj1215.github.io/2025/10/02/c%E8%AF%AD%E8%A8%80%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0/">https://haoj1215.github.io/2025/10/02/c%E8%AF%AD%E8%A8%80%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2024 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/C%E8%AF%AD%E8%A8%80/"># C语言</a>
+                    
+                        <a href="/tags/summary/"># summary</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/10/04/c%E8%AF%AD%E8%A8%80%E6%8C%87%E9%92%88/">c语言指针</a>
+            
+            
+            <a class="next" rel="next" href="/2025/09/28/c%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/">c语言文件操作</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© JiangHao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+
+</html>

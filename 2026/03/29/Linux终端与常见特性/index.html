@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="JiangHao">
+
+
+    <meta name="subtitle" content="技术与创意的探索平台">
+
+
+    <meta name="description" content="个人技术博客，分享编程的学习与思考">
+
+
+    <meta name="keywords" content="编程,技术,博客">
+
+
+<title>Linux终端与常见特性 | HaoJ&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">HaoJ&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">HaoJ&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux终端与常见特性</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">JiangHao</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 29, 2026&nbsp;&nbsp;13:18:44</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="Linux终端与常见特性"><a href="#Linux终端与常见特性" class="headerlink" title="Linux终端与常见特性"></a>Linux终端与常见特性</h1><h2 id="一、目录结构"><a href="#一、目录结构" class="headerlink" title="一、目录结构"></a>一、目录结构</h2><p>&#x2F;<br>├── bin&#x2F;            # 基本命令二进制文件<br>├── boot&#x2F;         # 启动加载文件<br>├── dev&#x2F;           # 设备文件<br>├── etc&#x2F;            # 系统配置文件<br>├── home&#x2F;       # 用户主目录<br>├── lib&#x2F;             # 系统库文件<br>├── media&#x2F;      # 可移动媒体挂载点<br>├── mnt&#x2F;          # 临时挂载点<br>├── opt&#x2F;           # 可选应用软件包<br>├── proc&#x2F;         # 进程和内核信息<br>├── root&#x2F;         # root用户主目录<br>├── run&#x2F;          # 运行时数据<br>├── sbin&#x2F;         # 系统管理命令<br>├── srv&#x2F;           # 服务数据<br>├── sys&#x2F;          # 系统设备信息<br>├── tmp&#x2F;         # 临时文件<br>├── usr&#x2F;          # 用户程序和数据<br>└── var&#x2F;          # 可变数据文件</p>
+<h2 id="二、文件类型"><a href="#二、文件类型" class="headerlink" title="二、文件类型"></a>二、文件类型</h2><p>目录文件<strong>d</strong>、链接文件<strong>l</strong>、管道文件<strong>p</strong>、设备文件<strong>c、b</strong>、套接字文件<strong>s</strong>、普通文件</p>
+<h2 id="三、权限"><a href="#三、权限" class="headerlink" title="三、权限"></a>三、权限</h2><p>chmod    r(4), w(2), x(1), -(0)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> u+x file, chomd 766 file</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、终端常用命令"><a href="#四、终端常用命令" class="headerlink" title="四、终端常用命令"></a>四、终端常用命令</h2><ol>
+<li>cp：拷贝</li>
+<li>rm：删除</li>
+<li>mv：移动&#x2F;重命名</li>
+<li>vim：文本编辑</li>
+<li>cat：查看&#x2F;合并</li>
+<li>more：分页查看</li>
+<li>tail：查看尾部</li>
+<li>less：高级分页查看</li>
+<li>head：查看头部</li>
+<li>find：文件查找</li>
+<li>grep：文本搜索</li>
+<li>tar：归档压缩</li>
+<li>ps：进程查看</li>
+<li>kill：杀死进程</li>
+<li>&amp;：后台运行</li>
+</ol>
+<h2 id="五、程序编译链接"><a href="#五、程序编译链接" class="headerlink" title="五、程序编译链接"></a>五、程序编译链接</h2><p>apt、install、gcc&#x2F;g++&#x2F;vim&#x2F;make</p>
+<p>xx.c-&gt;xx  预处理、编译、汇编、链接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o main main.c</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、调试：GDB"><a href="#六、调试：GDB" class="headerlink" title="六、调试：GDB"></a>六、调试：GDB</h2><h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><ol>
+<li>l：显示代码</li>
+<li>b：下断点</li>
+<li>info break：查看断点信息</li>
+<li>r：运行程序</li>
+<li>n：单步执行</li>
+<li>p：打印</li>
+<li>s：进入函数</li>
+<li>finish：跳出函数</li>
+<li>q：退出调试</li>
+</ol>
+<h2 id="七、库文件"><a href="#七、库文件" class="headerlink" title="七、库文件"></a>七、库文件</h2><p>定义：预先编译好的方法的集合</p>
+<p>libxx.a：静态库—用到的方法会拷贝到可执行程序中</p>
+<p>libxx.so：共享库—不会拷贝用到的共享库，运行程序时动态链接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o main main.c -l/-L <span class="comment">#-l库名 -L路径</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="八、进程与信号"><a href="#八、进程与信号" class="headerlink" title="八、进程与信号"></a>八、进程与信号</h2><h3 id="fork"><a href="#fork" class="headerlink" title="fork()"></a>fork()</h3><p>**功能：**创建当前进程的一个子进程副本</p>
+<p><strong>特点：</strong></p>
+<ol>
+<li><p>返回值：父进程返回子进程PID；子进程返回0；失败返回-1</p>
+</li>
+<li><p>写时拷贝：子进程不立即复制父进程的内存空间；共享同一物理内存页；当任一进程尝试写入时，才复制该内存页</p>
+</li>
+<li><p>子进程继承父进程的代码段、数据段、堆栈、打开的文件描述符、信号处理函数、当前工作目录等</p>
+</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">-1</span>)&#123;</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Here is child process,PID = %d\n&quot;</span>, getpid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//父进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Here is parent process,PID = %d\n&quot;</span>, pid);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="exec"><a href="#exec" class="headerlink" title="exec()"></a>exec()</h3><p>**功能：**替换当前进程的内存映像，加载并执行新程序</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主要方法</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execl</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *path, <span class="type">const</span> <span class="type">char</span> *arg, ...)</span>;      <span class="comment">// 参数列表</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execv</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *path, <span class="type">char</span> *<span class="type">const</span> argv[])</span>;        <span class="comment">// 参数数组</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execlp</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *file, <span class="type">const</span> <span class="type">char</span> *arg, ...)</span>;     <span class="comment">// 搜索PATH</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execvp</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *file, <span class="type">char</span> *<span class="type">const</span> argv[])</span>;       <span class="comment">// 搜索PATH+数组</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execle</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *path, <span class="type">const</span> <span class="type">char</span> *arg, ..., <span class="type">char</span> *<span class="type">const</span> envp[])</span>;  <span class="comment">//指定环境变量</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>特点：</strong></p>
+<ol>
+<li><p>不创建新进程，替换当前进程</p>
+</li>
+<li><p>成功时不返回（原程序被覆盖）</p>
+</li>
+<li><p>失败时返回 -1</p>
+</li>
+<li><p>通常与fork()配合使用</p>
+</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="comment">// 方式1：参数列表</span></span><br><span class="line">execl(<span class="string">&quot;/bin/ls&quot;</span>, <span class="string">&quot;ls&quot;</span>, <span class="string">&quot;-l&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line"><span class="comment">// 方式2：参数数组</span></span><br><span class="line"><span class="type">char</span> *args[] = &#123;<span class="string">&quot;ls&quot;</span>, <span class="string">&quot;-l&quot;</span>, <span class="literal">NULL</span>&#125;;</span><br><span class="line">execv(<span class="string">&quot;/bin/ls&quot;</span>, args);</span><br><span class="line"><span class="comment">// 方式3：搜索PATH</span></span><br><span class="line">execlp(<span class="string">&quot;ls&quot;</span>, <span class="string">&quot;ls&quot;</span>, <span class="string">&quot;-l&quot;</span>, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="kill"><a href="#kill" class="headerlink" title="kill()"></a>kill()</h3><p>**功能：**向指定进程发送信号</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">kill</span><span class="params">(<span class="type">pid_t</span> pid, <span class="type">int</span> sig)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数说明：</strong></p>
+<ol>
+<li>pid:（&gt;0）发送给指定PID的进程；（&#x3D;&#x3D;0）发送给同进程组的所有进程；（&#x3D;&#x3D;-1）发送给有权限的所有进程；（&lt;-1）发送给进程组ID为|PID|的所有进程</li>
+<li>sig：信号编号</li>
+</ol>
+<p><strong>常用信号</strong></p>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>值</th>
+<th>默认动作</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIGHUP</td>
+<td>1</td>
+<td>Term</td>
+<td>终端挂起</td>
+</tr>
+<tr>
+<td>SIGINT</td>
+<td>2</td>
+<td>Term</td>
+<td>中断（Ctrl+C）</td>
+</tr>
+<tr>
+<td>SIGQUIT</td>
+<td>3</td>
+<td>Core</td>
+<td>退出（Ctrl+\）</td>
+</tr>
+<tr>
+<td>SIGKILL</td>
+<td>9</td>
+<td>Term</td>
+<td><strong>强制终止</strong>（不可捕获）</td>
+</tr>
+<tr>
+<td>SIGTERM</td>
+<td>15</td>
+<td>Term</td>
+<td>优雅终止</td>
+</tr>
+<tr>
+<td>SIGSTOP</td>
+<td>17,19,23</td>
+<td>Stop</td>
+<td><strong>暂停进程</strong>（不可捕获）</td>
+</tr>
+<tr>
+<td>SIGCONT</td>
+<td>18,19,25</td>
+<td>Cont</td>
+<td>继续执行</td>
+</tr>
+</tbody></table>
+<h3 id="signal"><a href="#signal" class="headerlink" title="signal()"></a>signal()</h3><p>**功能：**设置信号处理函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="title function_">void</span> <span class="params">(*<span class="type">sighhandler_t</span>)</span><span class="params">(<span class="type">int</span>)</span>;</span><br><span class="line"><span class="type">sighandler_t</span> <span class="title function_">signal</span><span class="params">(<span class="type">int</span> signum, <span class="type">sighandler_t</span> handler)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>处理方式</strong></p>
+<ol>
+<li>自定义函数：signal(SIGINT, my_handler)</li>
+<li>忽略信号：signal(SIGINT, SIG_IGN)</li>
+<li>默认处理：signal(SIGINT, SIG_DFL)</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">sigint_handler</span><span class="params">(<span class="type">int</span> sig)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\nReceived SIGINT (Ctrl+C), but I won&#x27;t die!\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 设置SIGINT处理函数</span></span><br><span class="line">    signal(SIGINT, sigint_handler);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Running...\n&quot;</span>);</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="写时拷贝"><a href="#写时拷贝" class="headerlink" title="写时拷贝"></a>写时拷贝</h3><p><strong>原理</strong></p>
+<ol>
+<li>fork()时：父子进程共享同一物理内存页</li>
+<li>设置页表：所有共享也标记为只读</li>
+<li>写入时：触发页错误异常-&gt;内核复制该页-&gt;修改页表-&gt;恢复写入操作</li>
+</ol>
+<p><strong>有点</strong></p>
+<ol>
+<li>高效：避免不必要的内存复制</li>
+<li>快速：fork()几乎立即返回</li>
+<li>节省内存：只复制实际修改的页</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> data = <span class="number">100</span>;</span><br><span class="line">    <span class="type">pid_t</span> pid = fork();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">        data = <span class="number">200</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Child: data = %d\n&quot;</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Parent: data = %d\n&quot;</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="库函数vs系统调用"><a href="#库函数vs系统调用" class="headerlink" title="库函数vs系统调用"></a>库函数vs系统调用</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>库函数（Library Function）</th>
+<th>系统调用（System Call）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>定义</strong></td>
+<td>标准C库提供的函数</td>
+<td>操作系统内核提供的接口</td>
+</tr>
+<tr>
+<td><strong>位置</strong></td>
+<td>用户空间</td>
+<td>内核空间</td>
+</tr>
+<tr>
+<td><strong>调用方式</strong></td>
+<td>普通函数调用</td>
+<td>通过软中断（如<code>int 0x80</code>）</td>
+</tr>
+<tr>
+<td><strong>执行速度</strong></td>
+<td>较快（无上下文切换）</td>
+<td>较慢（需要上下文切换）</td>
+</tr>
+<tr>
+<td><strong>可移植性</strong></td>
+<td>高（跨平台）</td>
+<td>低（操作系统相关）</td>
+</tr>
+<tr>
+<td><strong>示例</strong></td>
+<td><code>printf()</code>, <code>malloc()</code></td>
+<td><code>read()</code>, <code>write()</code>, <code>fork()</code></td>
+</tr>
+<tr>
+<td><strong>错误处理</strong></td>
+<td>设置errno</td>
+<td>返回错误码</td>
+</tr>
+</tbody></table>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//库函数可能封装系统调用</span></span><br><span class="line"><span class="built_in">printf</span>(“Hello”);   write(<span class="number">1</span>, <span class="string">&quot;Hello&quot;</span>, <span class="number">5</span>);   sys_write();</span><br><span class="line"><span class="comment">//库函数-&gt;系统调用-&gt;内核函数</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>常见对应关系</strong></p>
+<table>
+<thead>
+<tr>
+<th>库函数</th>
+<th>底层系统调用</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fopen()</code></td>
+<td><code>open()</code></td>
+<td>打开文件</td>
+</tr>
+<tr>
+<td><code>fread()</code>&#x2F;<code>fwrite()</code></td>
+<td><code>read()</code>&#x2F;<code>write()</code></td>
+<td>文件读写</td>
+</tr>
+<tr>
+<td><code>malloc()</code>&#x2F;<code>free()</code></td>
+<td><code>brk()</code>&#x2F;<code>sbrk()</code></td>
+<td>内存分配</td>
+</tr>
+<tr>
+<td><code>printf()</code></td>
+<td><code>write()</code></td>
+<td>格式化输出</td>
+</tr>
+<tr>
+<td><code>getpid()</code></td>
+<td>直接系统调用</td>
+<td>获取进程ID</td>
+</tr>
+</tbody></table>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>JiangHao</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://haoj1215.github.io/2026/03/29/Linux%E7%BB%88%E7%AB%AF%E4%B8%8E%E5%B8%B8%E8%A7%81%E7%89%B9%E6%80%A7/">https://haoj1215.github.io/2026/03/29/Linux%E7%BB%88%E7%AB%AF%E4%B8%8E%E5%B8%B8%E8%A7%81%E7%89%B9%E6%80%A7/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2026/03/29/%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">进程间通信</a>
+            
+            
+            <a class="next" rel="next" href="/2025/10/04/c%E8%AF%AD%E8%A8%80%E6%8C%87%E9%92%88/">c语言指针</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© JiangHao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+
+</html>
